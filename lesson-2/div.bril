@@ -1,0 +1,19 @@
+@main {
+  v0: int = const 3;
+  v1: int = const 9;
+  v2: int = div v0 v1;
+  print v2;
+  four: int = const 4;
+  call_new_fun: bool = gt v2 four;
+  br call_new_fun .cont .exit;
+.cont:
+  call @new_fun v2;
+.exit:
+  neg1: int = const -1;
+  print neg1;
+}
+
+@new_fun(x: int) {
+  v3: int = mul x x;
+  print v3;
+}
