@@ -14,5 +14,5 @@ def form_blocks(body):
                 cur_block = []
         else:
             yield cur_block
-            cur_block = []
+            cur_block = [instr]
     yield cur_block

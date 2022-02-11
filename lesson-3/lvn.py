@@ -13,11 +13,11 @@ def get_args_tuple(args, var2num):
     for arg in args:
         if arg in var2num:
             meta_args.append(var2num[arg])
-        else:
-            raise ValueError("free variable!!!!!!!!" + arg)
+        else:                   # free variable/argument
+            meta_args.append(arg)
     return meta_args
 
-def local_value_numbering(block):
+def local_value_numbering(block, function_args):
     table = {}                  # values --> canonical variable
     var2num = {}
     num_to_canonical_var = {}
@@ -49,7 +49,10 @@ def local_value_numbering(block):
         if 'args' in new_instr:
             new_args=[]
             for arg in new_instr['args']:
-                new_args.append(num_to_canonical_var[var2num[arg]])
+                if arg not in var2num:
+                    new_args.append(arg) # argument to function
+                else:
+                    new_args.append(num_to_canonical_var[var2num[arg]])
             new_instr['args'] = new_args
 
         new_instrs.append(new_instr)
@@ -57,14 +60,24 @@ def local_value_numbering(block):
         # print("table:  " + str(table))
         # print()
 
-    return {"instrs" : new_instrs}
+    return new_instrs
+
+def local_value_numbering_wrapper(blocks, function_args):
+    blocks_in_fun = []
+    for block in blocks:
+        blocks_in_fun.extend(local_value_numbering(block, function_args))
+    return {"instrs" : blocks_in_fun}
 
 def main():
     prog = json.load(sys.stdin)
     for i in range(len(prog['functions'])):
         fun = prog['functions'][i]
-        freshen(fun)
-        new_instrs = local_value_numbering(fun['instrs'])
+        freshen(fun)            # rename all variables to fresh names
+        if 'args' in 'functions':
+            function_args = prog['functions']['args']
+        else:
+            function_args = []
+        new_instrs = local_value_numbering_wrapper(form_blocks(fun['instrs']), function_args)
         prog['functions'][i].update(new_instrs)
         dead_code_elimination(fun)
     print(json.dumps(prog, indent=4))
