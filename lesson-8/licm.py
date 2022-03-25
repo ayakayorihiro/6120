@@ -190,7 +190,7 @@ def make_preloop_header(graph, label2block, dominators, loop_invariants, loop, i
     loop_entry = loop["entry"]
     preloop_header = [ {"label" : preheader_label} ]
     if not loop_invariants:
-        return instrs
+        return instrs, graph, label2block
     new_instrs = [] # instrs.copy()
     new_graph = copy.deepcopy(graph)
     new_label2block = copy.deepcopy(label2block)
