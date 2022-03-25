@@ -112,18 +112,62 @@ def get_loop_exits(graph, loop):
     print("Exits: " + str(exits))
     return exits
 
-def get_loop_blocks_that_use_var(label2block, var, loop):
-    using_blocks = set()
+# def get_loop_blocks_that_define_var(label2block, var, vardef, loop):
+def is_var_defined_elsewhere(label2block, var, vardef, loop):
     for lblock in loop["loop"]:
         print(lblock)
         for defvar, defn in get_var_defs(label2block[lblock]).items():
-            if var == defvar:
+            if var == defvar and vardef != defn:
+                return True
+    return False
+
+def get_loop_blocks_that_use_var(label2block, var, loop):
+    using_blocks = set()
+    for lblock in loop["loop"]:
+        for instr in label2block[lblock]:
+            if (not "args" in instr): #  or (not "dest" in instr)
+                continue
+            if var in instr["args"]:
                 using_blocks.add(lblock)
-                break
     return using_blocks
+
+"""
+Does the loop invariant satisfy:
+- the assigned-to variable is dead after the loop
+- instruction can't have side effect (is the op not a div)
+"""
+def sat_relaxed_cond_3(graph, label2block, exits, li_var, loop_invariants, loop):
+    side_effect_ops = ["div", "print"]
+    # ruling out division
+    if "op" in loop_invariants[li_var]["instr"] and loop_invariants[li_var]["instr"]["op"] in side_effect_ops:
+        return False
+    # the assigned-to variable is dead after the loop
+    li_block = loop_invariants[li_var]["block"]
+    for lexit in exits:         # for every loop exit
+        for succ in graph[lexit].successors: # want to perform BFS/DFS from every successor to see if there are any future uses of the variable
+            if succ in loop["loop"]:
+                continue
+            seent = set()
+            q = [succ]
+            while len(q) > 0:
+                curr_block = q.pop(0)
+                for instr in label2block[curr_block]:
+                    if "args" in instr and li_var in instr["args"]: # used in a future block
+                        print("found use in block " + curr_block)
+                        return False
+                    for further_succ in graph[curr_block].successors:
+                        if not further_succ in seent:
+                            seent.add(further_succ)
+                            q.append(further_succ)
+
+    return True
 
 def can_move(graph, label2block, dominators, loop_invariants, li_var, loop, exits):
     li_block = loop_invariants[li_var]["block"]
+    # no other definitions of the same variable exist in the loop
+    if is_var_defined_elsewhere(label2block, li_var, loop_invariants[li_var]["instr"], loop):
+        print(li_var + " is defined elsewhere in the loop, can't move")
+        return False
     # the definition dominates all of its uses
     for use_block in get_loop_blocks_that_use_var(label2block, li_var, loop):
         if not li_block in dominators[use_block]:
@@ -131,8 +175,8 @@ def can_move(graph, label2block, dominators, loop_invariants, li_var, loop, exit
             return False
     # the instruction dominates all loop exits
     for lexit in exits:
-        if not li_block in dominators[lexit]: # there exists an exit not dominated by li block
-            print(li_block + " does not dominate loop exit: " + lexit)
+        if (not li_block in dominators[lexit]) and (not sat_relaxed_cond_3(graph, label2block, exits, li_var, loop_invariants, loop)): # there exists an exit not dominated by li block
+            print(li_block + " does not dominate loop exit: " + lexit + " and does not satisfy the relaxed condition")
             return False
 
     return True
