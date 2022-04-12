@@ -1,0 +1,4 @@
+316.226184874055
+total_dyn_inst: 217
+0.45user 0.04system 0:00.49elapsed 100%CPU (0avgtext+0avgdata 34476maxresident)k
+0inputs+8outputs (0major+10588minor)pagefaults 0swaps

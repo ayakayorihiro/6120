@@ -1,0 +1,11 @@
+1
+0
+0
+0
+0
+0
+0
+0
+total_dyn_inst: 100
+0.27user 0.01system 0:00.29elapsed 100%CPU (0avgtext+0avgdata 34388maxresident)k
+0inputs+8outputs (0major+10373minor)pagefaults 0swaps

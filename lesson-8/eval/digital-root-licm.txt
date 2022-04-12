@@ -1,0 +1,17 @@
+4
+9
+15
+6
+10
+1
+4
+10
+1
+6
+10
+1
+7
+7
+total_dyn_inst: 247
+0.78user 0.03system 0:00.82elapsed 100%CPU (0avgtext+0avgdata 34244maxresident)k
+0inputs+8outputs (2major+10688minor)pagefaults 0swaps

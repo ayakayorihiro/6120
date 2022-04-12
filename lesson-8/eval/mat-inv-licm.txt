@@ -1,0 +1,23 @@
+Traceback (most recent call last):
+  File "/home/ayaka/projects/6120/lesson-8/licm.py", line 266, in <module>
+    main()
+  File "/home/ayaka/projects/6120/lesson-8/licm.py", line 252, in main
+    reaching_defs, _ = data_flow_analysis(graph, new_label2block, *analysis)
+  File "/home/ayaka/projects/6120/lesson-8/data_flow.py", line 43, in data_flow_analysis
+    new_outs = transfer_fn(label2block[b], ins[b])
+  File "/home/ayaka/projects/6120/lesson-8/data_flow.py", line 138, in reaching_defs
+    type = defn["type"]
+KeyError: 'type'
+/home/ayaka/projects/bril/bril-ts/build/brili.js:776
+process.on('unhandledRejection', e => { throw e; });
+                                        ^
+
+SyntaxError: Unexpected end of JSON input
+    at JSON.parse (<anonymous>)
+    at /home/ayaka/projects/bril/bril-ts/build/brili.js:761:29
+    at Generator.next (<anonymous>)
+    at fulfilled (/home/ayaka/projects/bril/bril-ts/build/brili.js:6:58)
+    at process._tickCallback (internal/process/next_tick.js:68:7)
+Command exited with non-zero status 1
+0.25user 0.01system 0:00.26elapsed 100%CPU (0avgtext+0avgdata 34808maxresident)k
+0inputs+0outputs (0major+10575minor)pagefaults 0swaps

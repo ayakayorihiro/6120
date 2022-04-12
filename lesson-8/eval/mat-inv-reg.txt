@@ -1,0 +1,13 @@
+-20
+0.25
+-1.15
+0.8
+-0.75
+2.45
+-1.4
+0.25
+-0.35
+0.2
+total_dyn_inst: 1044
+0.24user 0.01system 0:00.25elapsed 100%CPU (0avgtext+0avgdata 34968maxresident)k
+0inputs+8outputs (0major+10797minor)pagefaults 0swaps

@@ -1,0 +1,5 @@
+7
+error: undefined variable eq_one
+Command exited with non-zero status 2
+0.42user 0.01system 0:00.44elapsed 100%CPU (0avgtext+0avgdata 35104maxresident)k
+0inputs+8outputs (0major+10660minor)pagefaults 0swaps

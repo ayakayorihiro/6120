@@ -10,13 +10,13 @@ OUT=${SCRIPT_DIR}/ayaka-licm-eval.csv
 
 TMP_DIR=${SCRIPT_DIR}/eval
 mkdir -p ${TMP_DIR}
-reg_file=${TMP_DIR}/reg.txt
-licm_file=${TMP_DIR}/licm.txt
 
 echo "name,baseline,licm,%-improvement" >> ${OUT}
 for benchmark in $( ls ${BENCHMARKS_DIR} | grep ".bril" | grep -v turnt | grep -v circle  | grep -v factors ); do
     benchmark_name=$( echo ${benchmark} | cut -d. -f1 )
     echo $benchmark_name
+    reg_file=${TMP_DIR}/${benchmark_name}-reg.txt
+    licm_file=${TMP_DIR}/${benchmark_name}-licm.txt
     args=$( grep "# ARGS" ${BENCHMARKS_DIR}/${benchmark} | cut -d' ' -f3- )
     # run regular version
     ( bril2json < ${BENCHMARKS_DIR}/${benchmark} | time brili -p $args ) &> ${reg_file}
@@ -34,4 +34,4 @@ for benchmark in $( ls ${BENCHMARKS_DIR} | grep ".bril" | grep -v turnt | grep -
     echo ${benchmark_name},${r_dyn_inst},${l_dyn_inst},${improv} >> ${OUT} # ,${r_time_in_sec},${l_time_in_sec}
 done
 
-rm -rf ${TMP_DIR}
+# rm -rf ${TMP_DIR}

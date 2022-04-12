@@ -1,0 +1,27 @@
+Traceback (most recent call last):
+  File "/home/ayaka/projects/6120/lesson-8/licm.py", line 266, in <module>
+    main()
+  File "/home/ayaka/projects/6120/lesson-8/licm.py", line 241, in main
+    prog = json.load(sys.stdin)
+  File "/usr/lib/python3.8/json/__init__.py", line 293, in load
+    return loads(fp.read(),
+KeyboardInterrupt
+Command terminated by signal 2
+0.04user 0.01system 0:00.06elapsed 98%CPU (0avgtext+0avgdata 22680maxresident)k
+0inputs+0outputs (0major+2657minor)pagefaults 0swaps
+Traceback (most recent call last):
+  File "/home/ayaka/.local/bin/bril2json", line 5, in <module>
+    from briltxt import bril2json
+  File "/home/ayaka/.local/lib/python3.8/site-packages/briltxt.py", line 10, in <module>
+    import lark
+  File "/home/ayaka/.local/lib/python3.8/site-packages/lark/__init__.py", line 3, in <module>
+    from .visitors import Transformer, Visitor, v_args, Discard, Transformer_NonRecursive
+  File "/home/ayaka/.local/lib/python3.8/site-packages/lark/visitors.py", line 9, in <module>
+    from inspect import getmembers, getmro
+  File "<frozen importlib._bootstrap>", line 991, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 975, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 671, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 844, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 976, in get_code
+  File "<frozen importlib._bootstrap_external>", line 640, in _compile_bytecode
+KeyboardInterrupt

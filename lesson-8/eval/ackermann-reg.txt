@@ -1,0 +1,4 @@
+509
+total_dyn_inst: 1464231
+0.59user 0.02system 0:00.58elapsed 106%CPU (0avgtext+0avgdata 52680maxresident)k
+32inputs+8outputs (1major+15150minor)pagefaults 0swaps
