@@ -112,8 +112,9 @@ def main():
         defs = get_all_vars(new_label2block)
         insert_phi(defs, graph, new_label2block, df)
         stack = {v : v for v in defs}
-        for arg in func["args"]:
-            stack[arg["name"]] = arg["name"]
+        if "args" in func:
+            for arg in func["args"]:
+                stack[arg["name"]] = arg["name"]
         rename(label2block[0][0], stack, graph, new_label2block, rev_immediate_dominators)
         new_instrs = []
         for blockname in new_label2block:
