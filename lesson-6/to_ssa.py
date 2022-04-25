@@ -107,8 +107,8 @@ def main():
         # print("dominance frontier:\n" + str(df) + "\n")
         # print("immediate dominators:\n" + str(immediate_dominators) + "\n")
         # print("rev immediate dominators:\n" + str(rev_immediate_dominators) + "\n")
-        analysis = REACHING_DEFS
-        reaching_defs, _ = data_flow_analysis(graph, new_label2block, *analysis)
+        # analysis = REACHING_DEFS
+        # reaching_defs, _ = data_flow_analysis(graph, new_label2block, *analysis)
         defs = get_all_vars(new_label2block)
         insert_phi(defs, graph, new_label2block, df)
         stack = {v : v for v in defs}
