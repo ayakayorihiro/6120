@@ -31,7 +31,7 @@ def insert_phi(defs, graph, label2block, df): # df is dominance frontier
                     # add phi node to block if we haven't done so already
                     if not (blockname in phi_var_to_blocks[v]):
                         phi = { "op" : "phi", "type" : var_type, "args" : [], "dest" : v, "labels" : [] }
-                        label2block[blockname].append(phi)
+                        label2block[blockname].insert(1, phi)
                         phi_var_to_blocks[v].add(blockname)
                         # add block to defs[v] unless we have already
                         defs[v].add((blockname, var_type))
@@ -40,24 +40,48 @@ def insert_phi(defs, graph, label2block, df): # df is dominance frontier
     # print(label2block)
     # print(json.dumps(label2block, indent=2))
 
+global_counter = 0
+
 def rename(blockname, stack, graph, label2block, rev_immediate_dominators):
+    global global_counter
+    # print("visiting " + blockname + ", stack looks like:\n" + str(stack))
+    og_stack = copy.deepcopy(stack)
     block = label2block[blockname]
     # og_block = copy.deepcopy(block)
     for instr in block:
         if "args" in instr:
-            new_args = []
-            for arg in instr["args"]:
-                new_args.append(arg + "." + str(stack[arg]))
-            instr["args"] = new_args
+            if "op" in instr and instr["op"] != "phi":
+                new_args = []
+                for arg in instr["args"]:
+                    # if arg in stack:
+                    new_args.append(str(stack[arg]))
+                    instr["args"] = new_args
         if "dest" in instr:
             dest = instr["dest"]
-            stack[dest] += 1
-            instr["dest"] = dest + "." + str(stack[dest])
-    # for preds in graph[blockname].successors:
-    
+            stack[dest] += "." + str(global_counter)
+            global_counter += 1
+            instr["dest"] = stack[dest]
+
+    for preds in graph[blockname].successors:
+        for instr in label2block[preds]:
+            if ('op' in instr) and (instr['op'] == "phi"):
+                dest = instr["dest"].split(".")[0]
+                if (stack[dest] != og_stack[dest]): # if we introduced a new variable name
+                    instr["labels"].append(blockname)
+                    instr["args"].append(str(stack[dest]))
+                    # print(instr)
+
     for child in rev_immediate_dominators[blockname]:
-        print("Going from " + blockname + " to child " + child)
+        # print("Going from " + blockname + " to child " + child + ", stack looks like:\n" + str(stack))
+        before_stack = copy.deepcopy(stack)
         rename(child, stack, graph, label2block, rev_immediate_dominators)
+        stack = copy.deepcopy(before_stack)
+        # print("returned stack: " + str(stack))
+
+    # print("stack: " + str(stack) + " og_stack: " + str(og_stack))
+    # pop all the names we just pushed onto the stacks
+    stack = copy.deepcopy(og_stack)
+    # print("stack: " + str(stack))
 
 def main():
     # Load the program JSON
@@ -81,17 +105,22 @@ def main():
         # print("dominators map:\n" + str(dominators) + "\n")
         # print("strict dominators map:\n" + str(strict_dominators) + "\n")
         # print("dominance frontier:\n" + str(df) + "\n")
-        print("immediate dominators:\n" + str(immediate_dominators) + "\n")
-        print("rev immediate dominators:\n" + str(rev_immediate_dominators) + "\n")
+        # print("immediate dominators:\n" + str(immediate_dominators) + "\n")
+        # print("rev immediate dominators:\n" + str(rev_immediate_dominators) + "\n")
         analysis = REACHING_DEFS
         reaching_defs, _ = data_flow_analysis(graph, new_label2block, *analysis)
         defs = get_all_vars(new_label2block)
         insert_phi(defs, graph, new_label2block, df)
-        stack = {v : 0 for v in defs}
+        stack = {v : v for v in defs}
         for arg in func["args"]:
-            stack[arg["name"]] = 0
+            stack[arg["name"]] = arg["name"]
         rename(label2block[0][0], stack, graph, new_label2block, rev_immediate_dominators)
-        print(new_label2block)
+        new_instrs = []
+        for blockname in new_label2block:
+            new_instrs += new_label2block[blockname]
+        func['instrs'] = new_instrs
+        # print(json.dumps(new_label2block, indent=2))
+    print(json.dumps(prog, indent=2))
 
 if __name__ == '__main__':
     main()
