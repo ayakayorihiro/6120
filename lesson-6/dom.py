@@ -46,13 +46,19 @@ def find_immediate_dominators(strict_dominators_dict):
 
 def compute_dominance_frontier(graph, strict_dominators_dict):
     dominance_frontier = {vertex : [] for vertex in strict_dominators_dict}
-    for vertex in strict_dominators_dict:
-        for other_vertex in graph:
-            if not other_vertex in strict_dominators_dict[vertex]: # can't be in the frontier if A strictly dominates B
-                for preds in graph[other_vertex].predecessors:
-                    if preds in strict_dominators_dict[vertex]:
-                        dominance_frontier[vertex].append(other_vertex)
+    for a in strict_dominators_dict: # A
+        for b in graph:        # B
+            if not a in strict_dominators_dict[b]: # can't be in the frontier if A strictly dominates B
+                for preds in graph[b].predecessors:
+                    if (a in strict_dominators_dict[preds]) or (preds == a):
+                        dominance_frontier[a].append(b)
                         break
+
+            # if not other_vertex in strict_dominators_dict[vertex]: # can't be in the frontier if A strictly dominates B
+            #     for preds in graph[other_vertex].predecessors:
+            #         if preds in strict_dominators_dict[vertex]:
+            #             dominance_frontier[vertex].append(other_vertex)
+            #             break
 
     return dominance_frontier
 
