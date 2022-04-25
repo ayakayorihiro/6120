@@ -1,4 +1,3 @@
-from data_flow import *
 from dom import *
 from make_cfg import *
 import copy
@@ -93,6 +92,7 @@ def main():
         blocks = form_blocks(func['instrs'])
         label2block = label_blocks(blocks)
         graph, new_label2block = get_cfg(label2block)
+        # print(graph)
         # print("====" + func)
         dominators = find_dominators(graph, label2block[0][0])
         strict_dominators = find_strict_dominators(dominators)
@@ -110,11 +110,15 @@ def main():
         # analysis = REACHING_DEFS
         # reaching_defs, _ = data_flow_analysis(graph, new_label2block, *analysis)
         defs = get_all_vars(new_label2block)
-        insert_phi(defs, graph, new_label2block, df)
         stack = {v : v for v in defs}
         if "args" in func:
             for arg in func["args"]:
-                stack[arg["name"]] = arg["name"]
+                argname = arg["name"]
+                stack[argname] = argname
+                if not argname in defs:
+                    defs[argname] = set()
+                defs[argname].add((label2block[0][0], arg["type"]))
+        insert_phi(defs, graph, new_label2block, df)
         rename(label2block[0][0], stack, graph, new_label2block, rev_immediate_dominators)
         new_instrs = []
         for blockname in new_label2block:
