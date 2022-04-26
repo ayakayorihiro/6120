@@ -29,6 +29,7 @@ def insert_phi(defs, graph, label2block, df): # df is dominance frontier
                 for blockname in df[def_block]:
                     # add phi node to block if we haven't done so already
                     if not (blockname in phi_var_to_blocks[v]):
+                        # print("adding phi node for " + v + " to block " + blockname)
                         phi = { "op" : "phi", "type" : var_type, "args" : [], "dest" : v, "labels" : [] }
                         label2block[blockname].insert(1, phi)
                         phi_var_to_blocks[v].add(blockname)
@@ -57,7 +58,7 @@ def rename(blockname, stack, graph, label2block, rev_immediate_dominators):
                     instr["args"] = new_args
         if "dest" in instr:
             dest = instr["dest"]
-            stack[dest] += "." + str(global_counter)
+            stack[dest] = dest + "." + str(global_counter)
             global_counter += 1
             instr["dest"] = stack[dest]
 
@@ -118,8 +119,9 @@ def main():
                 if not argname in defs:
                     defs[argname] = set()
                 defs[argname].add((label2block[0][0], arg["type"]))
+        # print(defs)
         insert_phi(defs, graph, new_label2block, df)
-        rename(label2block[0][0], stack, graph, new_label2block, rev_immediate_dominators)
+        # rename(label2block[0][0], stack, graph, new_label2block, rev_immediate_dominators)
         new_instrs = []
         for blockname in new_label2block:
             new_instrs += new_label2block[blockname]
